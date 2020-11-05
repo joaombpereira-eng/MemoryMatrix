@@ -5,21 +5,27 @@ import android.graphics.Color
 import android.graphics.Paint
 import pt.isel.poo.tile.Tile
 
-const val MARGIN = 15f
+private const val MARGIN: Float = 20f
 
+/**
+ * Tile implementation used to display memory matrix pattern elements.
+ */
 class PatternElementTile : Tile {
 
     private val brush: Paint = Paint().apply {
         color = Color.parseColor("#AA8BC2")
+        strokeWidth = 5f
         style = Paint.Style.FILL_AND_STROKE
-        strokeWidth = 11f
     }
 
     override fun draw(canvas: Canvas?, side: Int) {
-            canvas?.drawRect(
-                MARGIN,MARGIN, side.toFloat()- MARGIN, side.toFloat()- MARGIN, brush)
+        canvas?.drawRect(
+            MARGIN, MARGIN,
+            side.toFloat() - MARGIN,
+            side.toFloat() - MARGIN,
+            brush
+        )
     }
 
     override fun setSelect(selected: Boolean) = false
-
 }
