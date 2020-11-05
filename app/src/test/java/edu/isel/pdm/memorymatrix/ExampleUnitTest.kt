@@ -1,4 +1,4 @@
-package com.firstapp.memorymatrix
+package edu.isel.pdm.memorymatrix
 
 import org.junit.Test
 
