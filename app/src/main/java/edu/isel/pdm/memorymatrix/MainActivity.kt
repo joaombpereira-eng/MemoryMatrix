@@ -1,7 +1,6 @@
-package com.firstapp.memorymatrix
+package edu.isel.pdm.memorymatrix
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -21,13 +20,9 @@ class MainActivity : AppCompatActivity() {
      * time interval.
      */
     private fun drawToGuess() {
-        viewModel.startGame(PATTERN_SIZE, binding.matrixView.widthInTiles)
-        binding.matrixView.drawPattern(viewModel.toGuess)
+        binding.matrixView.drawPattern(viewModel.game.toGuess)
         binding.startButton.isEnabled = false
         binding.startButton.setOnClickListener(null)
-        binding.startButton.postDelayed(5000) {
-            drawGuessing()
-        }
     }
 
     /**
@@ -35,16 +30,14 @@ class MainActivity : AppCompatActivity() {
      * entries to his current guess.
      */
     private fun drawGuessing() {
-        binding.matrixView.drawPattern(viewModel.current)
+        val userGuess: MatrixPattern = viewModel.game.currentGuess ?: throw IllegalStateException()
+        val toGuess: MatrixPattern = viewModel.game.toGuess ?: throw IllegalStateException()
+        binding.matrixView.drawGuessingPattern(userGuess, toGuess)
 
         binding.startButton.isEnabled = false
         binding.startButton.setOnClickListener(null)
         binding.matrixView.setTileListener { xTile, yTile ->
             viewModel.addGuess(Position(xTile, yTile))
-            if (!viewModel.isGameOngoing())
-                drawHasEnded()
-            else
-                drawGuessing()
             true
         }
     }
@@ -55,10 +48,10 @@ class MainActivity : AppCompatActivity() {
      */
     private fun drawNotStarted() {
         binding.startButton.isEnabled = true
-        binding.startButton.setOnClickListener {
-            drawToGuess()
-        }
         binding.matrixView.unsetTileListener()
+        binding.startButton.setOnClickListener {
+            viewModel.startGame(PATTERN_SIZE, binding.matrixView.widthInTiles, 5)
+        }
     }
 
     /**
@@ -66,10 +59,13 @@ class MainActivity : AppCompatActivity() {
      * his guess and the result of his efforts is being displayed.
      */
     private fun drawHasEnded() {
-        binding.matrixView.drawPattern(viewModel.current)
+        val userGuess: MatrixPattern = viewModel.game.currentGuess ?: throw IllegalStateException()
+        val toGuess: MatrixPattern = viewModel.game.toGuess ?: throw IllegalStateException()
+        binding.matrixView.drawGuessingPattern(userGuess, toGuess)
+
         binding.startButton.isEnabled = true
         binding.startButton.setOnClickListener {
-            drawToGuess()
+            viewModel.startGame(PATTERN_SIZE, binding.matrixView.widthInTiles, 5)
         }
         binding.matrixView.unsetTileListener()
     }
@@ -79,19 +75,25 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater)
     }
 
+    /**
+     * Displays the UI according to the current game state
+     */
+    private fun drawUI(){
+        when(viewModel.game.state) {
+            GameState.State.NOT_STARTED -> drawNotStarted()
+            GameState.State.MEMORIZING -> drawToGuess()
+            GameState.State.GUESSING -> drawGuessing()
+            else -> drawHasEnded()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        Log.v("MemoryMatrix", "onCreate() with activity ${this.hashCode()}")
-        Log.v("MemoryMatrix", "onCreate() with viewModel ${viewModel.hashCode()}")
-
-        // What should we draw?
-        // TODO: Fix for the case where the drawToGuess has already been made
-        when {
-            viewModel.isGameOngoing() && viewModel.current?.count == 0 -> drawToGuess()
-            viewModel.isGameOngoing() -> drawGuessing()
-            else -> drawNotStarted()
+        drawUI()
+        viewModel.gameListener = {
+            drawUI()
         }
     }
 }

@@ -11,7 +11,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.firstapp.memorymatrix"
+        applicationId "edu.isel.pdm.memorymatrix"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
