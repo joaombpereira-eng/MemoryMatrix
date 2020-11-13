@@ -1,18 +1,20 @@
 package edu.isel.pdm.memorymatrix.game
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.view.Menu
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import edu.isel.pdm.memorymatrix.AboutActivity
+import edu.isel.pdm.memorymatrix.R
 import edu.isel.pdm.memorymatrix.databinding.ActivityGameBinding
-
-private fun View.postDelayed(delay: Long, action: Runnable) {
-    postDelayed(action, delay)
-}
+import edu.isel.pdm.memorymatrix.utils.BaseActivity
 
 private const val PATTERN_SIZE = 8
 
-class MainActivity : AppCompatActivity() {
+/**
+ * The main game screen.
+ */
+class GameActivity : BaseActivity() {
 
     /**
      * Displays the UI associated to the game's ToGuess state, that is, when the user elected to
@@ -20,7 +22,7 @@ class MainActivity : AppCompatActivity() {
      * time interval.
      */
     private fun drawToGuess() {
-        binding.matrixView.drawPattern(viewModel.game.toGuess)
+        binding.matrixView.drawPattern(viewModel.game.value?.toGuess)
         binding.startButton.isEnabled = false
         binding.startButton.setOnClickListener(null)
     }
@@ -30,8 +32,8 @@ class MainActivity : AppCompatActivity() {
      * entries to his current guess.
      */
     private fun drawGuessing() {
-        val userGuess: MatrixPattern = viewModel.game.currentGuess ?: throw IllegalStateException()
-        val toGuess: MatrixPattern = viewModel.game.toGuess ?: throw IllegalStateException()
+        val userGuess = viewModel.game.value?.currentGuess ?: throw IllegalStateException()
+        val toGuess = viewModel.game.value?.toGuess ?: throw IllegalStateException()
         binding.matrixView.drawGuessingPattern(userGuess, toGuess)
 
         binding.startButton.isEnabled = false
@@ -59,8 +61,8 @@ class MainActivity : AppCompatActivity() {
      * his guess and the result of his efforts is being displayed.
      */
     private fun drawHasEnded() {
-        val userGuess: MatrixPattern = viewModel.game.currentGuess ?: throw IllegalStateException()
-        val toGuess: MatrixPattern = viewModel.game.toGuess ?: throw IllegalStateException()
+        val userGuess = viewModel.game.value?.currentGuess ?: throw IllegalStateException()
+        val toGuess = viewModel.game.value?.toGuess ?: throw IllegalStateException()
         binding.matrixView.drawGuessingPattern(userGuess, toGuess)
 
         binding.startButton.isEnabled = true
@@ -71,29 +73,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val viewModel: MatrixViewModel by viewModels()
-    private val binding: ActivityGameBinding by lazy {
-        ActivityGameBinding.inflate(layoutInflater)
-    }
-
-    /**
-     * Displays the UI according to the current game state
-     */
-    private fun drawUI(){
-        when(viewModel.game.state) {
-            GameState.State.NOT_STARTED -> drawNotStarted()
-            GameState.State.MEMORIZING -> drawToGuess()
-            GameState.State.GUESSING -> drawGuessing()
-            else -> drawHasEnded()
-        }
-    }
+    private val binding: ActivityGameBinding by lazy { ActivityGameBinding.inflate(layoutInflater) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        drawUI()
-        viewModel.gameListener = {
-            drawUI()
+        viewModel.game.observe(this) {
+            when (viewModel.game.value?.state) {
+                GameState.State.NOT_STARTED -> drawNotStarted()
+                GameState.State.MEMORIZING -> drawToGuess()
+                GameState.State.GUESSING -> drawGuessing()
+                else -> drawHasEnded()
+            }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_game, menu)
+        menu.findItem(R.id.about).setOnMenuItemClickListener {
+            startActivity(Intent(this, AboutActivity::class.java))
+            true
+        }
+        return true
     }
 }
