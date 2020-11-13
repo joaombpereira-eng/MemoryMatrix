@@ -1,10 +1,10 @@
-package edu.isel.pdm.memorymatrix
+package edu.isel.pdm.memorymatrix.game
 
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import edu.isel.pdm.memorymatrix.databinding.ActivityMainBinding
+import edu.isel.pdm.memorymatrix.databinding.ActivityGameBinding
 
 private fun View.postDelayed(delay: Long, action: Runnable) {
     postDelayed(action, delay)
@@ -71,8 +71,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val viewModel: MatrixViewModel by viewModels()
-    private val binding: ActivityMainBinding by lazy {
-        ActivityMainBinding.inflate(layoutInflater)
+    private val binding: ActivityGameBinding by lazy {
+        ActivityGameBinding.inflate(layoutInflater)
     }
 
     /**
