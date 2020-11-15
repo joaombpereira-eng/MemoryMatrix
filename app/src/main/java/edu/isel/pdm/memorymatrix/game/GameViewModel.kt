@@ -1,9 +1,10 @@
 package edu.isel.pdm.memorymatrix.game
 
+import android.app.Application
 import android.os.Parcelable
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import edu.isel.pdm.memorymatrix.game.GameState.State.*
 import edu.isel.pdm.memorymatrix.utils.runDelayed
 import kotlinx.android.parcel.Parcelize
@@ -25,7 +26,10 @@ private const val SAVED_STATE_KEY = "MatrixViewModel.SavedState"
 /**
  * View model for the memory game main activity
  */
-class MatrixViewModel(private val savedState: SavedStateHandle) : ViewModel() {
+class MatrixViewModel(
+        application: Application,
+        private val savedState: SavedStateHandle
+) : AndroidViewModel(application) {
 
     /**
      * The game state.
