@@ -9,6 +9,8 @@ import edu.isel.pdm.memorymatrix.game.GameState.State.*
 import edu.isel.pdm.memorymatrix.utils.runDelayed
 import kotlinx.android.parcel.Parcelize
 
+private const val SAVED_STATE_KEY = "MatrixViewModel.SavedState"
+
 /**
  * Data class used to represent the game saved state
  */
@@ -21,14 +23,12 @@ data class GameState(
     enum class State { NOT_STARTED, MEMORIZING, GUESSING, ENDED }
 }
 
-private const val SAVED_STATE_KEY = "MatrixViewModel.SavedState"
-
 /**
  * View model for the memory game main activity
  */
 class MatrixViewModel(
-        application: Application,
-        private val savedState: SavedStateHandle
+    application: Application,
+    private val savedState: SavedStateHandle
 ) : AndroidViewModel(application) {
 
     /**
