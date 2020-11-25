@@ -11,7 +11,7 @@ import edu.isel.pdm.memorymatrix.utils.runDelayed
 private const val LUMOSITY_URL = "https://www.lumosity.com/"
 private const val MY_YOUTUBE_CHANNEL = "https://www.youtube.com/channel/UCetmdF6qGnMAdZP32i8AnbA"
 private const val MY_TWITCH_CHANNEL = "https://www.twitch.tv/paulo_pereira"
-private const val MY_LINKED_IN = "https://www.linkedin.com/in/palbp"
+private const val MY_LINKED_IN = "https://www.linkedin.com/in/palbp/"
 
 /**
  * Extension method to parse the string as a URI
@@ -46,8 +46,8 @@ class AboutActivity : BaseActivity() {
         binding.imageTwitch.setOnClickListener {
             tryNavigateTo(MY_TWITCH_CHANNEL.parseUri(), binding.imageTwitch)
         }
-        binding.imageLinkedin.setOnClickListener {
-            tryNavigateTo(MY_LINKED_IN.parseUri(), binding.imageLinkedin)
+        binding.imageLinkedIn.setOnClickListener {
+            tryNavigateTo(MY_LINKED_IN.parseUri(), binding.imageLinkedIn)
         }
     }
 }
