@@ -2,6 +2,7 @@ package edu.isel.pdm.memorymatrix
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.widget.SeekBar
 import edu.isel.pdm.memorymatrix.databinding.ActivityLevelBinding
@@ -16,8 +17,9 @@ private fun SeekBar.setChangeListener(listener: (progress: Int) -> Unit) {
         override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
             if (fromUser) listener.invoke(progress)
         }
-        override fun onStartTrackingTouch(seekBar: SeekBar) { }
-        override fun onStopTrackingTouch(seekBar: SeekBar) { }
+
+        override fun onStartTrackingTouch(seekBar: SeekBar) {}
+        override fun onStopTrackingTouch(seekBar: SeekBar) {}
     })
 }
 
@@ -28,7 +30,7 @@ class LevelActivity : BaseActivity() {
 
     private val binding: ActivityLevelBinding by lazy { ActivityLevelBinding.inflate(layoutInflater) }
     private val minLevel by lazy { resources.getInteger(R.integer.min_level) }
-    private val gameRepository by lazy { (application as MemoryMatrixApplication).gameRepository }
+    private val gameRepository by lazy { memoryMatrixApp.gameRepository }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,12 +53,16 @@ class LevelActivity : BaseActivity() {
     override fun onStart() {
         super.onStart()
         binding.record.text = gameRepository.highestLevel.toString()
+        binding.levelSelection.text = binding.levelSelectionBar.progress.toString()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_level, menu)
         menu.findItem(R.id.history).setOnMenuItemClickListener {
-            // TODO: navigate to history activity
+            gameRepository.getAllScores().observe(this) {
+                // TODO: Populate the UI
+                Log.v(memoryMatrixApp.appTag,"Populating the UI in thread ${Thread.currentThread().name}")
+            }
             true
         }
         return true
